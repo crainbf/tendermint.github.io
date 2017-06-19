@@ -2,7 +2,7 @@
 title: "Using Ethermint with Geth and Mist"
 description: "By using Ethermint you get all the goodness from Proof-of-Stake while still being able to use all the usual go-ethereum tooling."
 date: "2017-06-19"
-author: "Adrian Brink""
+author: "Adrian Brink"
 categories:
     - "ethermint"
     - "ethereum"
