@@ -25,6 +25,9 @@ module.exports = function retrieve() {
         .pipe(unzip.Parse())
         .on('entry', entry => {
           let pieces = entry.path.split('tendermint-master/docs/')
+          if(entry.path === 'tendermint-master/changelog.md'){
+            entry.pipe(createWriteStream(DOCS_PATH + '/changelog.md'))
+          }
           if (pieces.length > 1) {
             if (entry.type === 'Directory') {
               mkdirp.sync(DOCS_PATH + '/' + pieces[1])
@@ -35,9 +38,7 @@ module.exports = function retrieve() {
             }
           }
         })
-        .on('end', () => {
-          setTimeout(() => resolve(), 1000)
-        })
+        .on('end', resolve)
     })
   })
 }
