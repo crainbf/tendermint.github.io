@@ -6,88 +6,59 @@ var docs = './content/docs/**/*.md'
 var intro = './content/intro/**/*.md'
 
 // templating
-var htmlTemplate = fs.readFileSync('./build/templates/TableOfContents.html', 'utf8')
+var htmlTemplate = fs.readFileSync(
+  './build/templates/TableOfContents.html',
+  'utf8'
+)
 var template = require('es6-template-strings')
 
 // functions
-function writeLinks (linkObject, filename) {
+function writeLinks(linkObject, filename) {
   let value = '\n'
-  let base = linkObject.base
-  let guides = linkObject.guides
-  let internals = linkObject.internals
-  let gettingStarted = linkObject.gettingStarted
 
-  if (base.length > 0) {
-    let links = base
-    value += '  <div class="title">Index</div>\n'
-
-    if (filename === './src/components/PageDocsMaster.vue') {
-      value += `  <router-link :to="'/docs'" exact>Documentation</router-link>\n`
-    }
-    if (filename === './src/components/PageIntroMaster.vue') {
-      value += `  <router-link :to="'/intro'" exact>Introduction</router-link>\n`
-    }
-
-    for (var i = 0; i < links.length; i++) {
-      if (links[i].title !== 'Index') {
-        value +=
-          `  <router-link :to="'${links[i].url}'">${links[i].title}</router-link>\n`
+  Object.keys(linkObject).forEach(key => {
+    if (['base', 'Hidden'].indexOf(key) !== -1) {
+      value += `  <div class="title">${key}</div>\n`
+      if(key === 'Docs'){
+        value += `  <router-link :to="'/docs'" exact>Documentation</router-link>\n`
       }
+      linkObject[key].forEach(link => {
+        if(link.title === 'Index'){
+          return
+        }
+        if(link.title === '2. First App'){
+          value += `  <router-link to="/download">1. Download Tendermint</router-link>\n`
+        }
+        value += `  <router-link :to="'${link.url}'">${link.title}</router-link>\n`
+      })
     }
-  }
-
-  if (guides.length > 0) {
-    let links = guides
-    value += '  <div class="title">Guides</div>\n'
-    for (var j = 0; j < links.length; j++) {
-      value +=
-        `  <router-link :to="'${links[j].url}'">${links[j].title}</router-link>\n`
-    }
-  }
-
-  if (internals.length > 0) {
-    let links = internals
-    value += '  <div class="title">Internals</div>\n'
-    for (var k = 0; k < links.length; k++) {
-      if (links[k].title !== 'Tendermint Types') {
-        value +=
-          `  <router-link :to="'${links[k].url}'">${links[k].title}</router-link>\n`
-      }
-    }
-  }
-
-  if (gettingStarted.length > 0) {
-    let links = gettingStarted
-    value += '  <div class="title">Getting Started</div>\n'
-    // add download link manually
-    value += `  <router-link to="/download">1. Download Tendermint</router-link>\n`
-    for (var l = 0; l < links.length; l++) {
-      value += `  <router-link :to="'${links[l].url}'">${links[l].title}</router-link>\n`
-    }
-  }
+  })
 
   return value
 }
 
-function writeTemplate (data, filename) {
+function writeTemplate(data, filename) {
   let links = writeLinks(data, filename)
   let filedata = template(htmlTemplate, { data: links })
   fs.writeFileSync(filename, filedata, 'utf8')
   console.log(`  ✓ ${filename}`)
 }
 
-function arrayToObject (array) {
+function arrayToObject(array) {
   let object = {}
-  object.base = array.filter(f => f.section === 'Docs' || f.section === 'Intro')
-  object.guides = array.filter(f => f.section === 'Guides')
-  object.internals = array.filter(f => f.section === 'Internals')
-  object.gettingStarted = array.filter(f => f.section === 'Getting Started')
+  let sectionKeys = new Set()
+  array.forEach(d => {
+    sectionKeys.add(d.section)
+  })
+  sectionKeys.forEach(key => {
+    object[key] = array.filter(el => el.section === key)
+  })
   return object
 }
 
-function buildAll (wildcard, filename) {
+function buildAll(wildcard, filename) {
   let filenames
-  glob(wildcard, function (err, files) {
+  glob(wildcard, function(err, files) {
     if (err) console.log(err)
     filenames = files
     let data = lib.filesToArray(filenames)
@@ -96,7 +67,7 @@ function buildAll (wildcard, filename) {
   })
 }
 
-module.exports = function () {
+module.exports = function() {
   buildAll(docs, './src/components/PageDocsMaster.vue')
   buildAll(intro, './src/components/PageIntroMaster.vue')
 }
