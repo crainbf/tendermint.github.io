@@ -13,20 +13,21 @@ var htmlTemplate = fs.readFileSync(
 var template = require('es6-template-strings')
 
 // functions
-function writeLinks(linkObject, filename) {
+function writeLinks(linkObject, filename, docType) {
   let value = '\n'
+  let hiddenKeys = docType === 'intro'
+    ? ['Hidden']
+    : ['Hidden', 'Getting Started', 'Docs']
 
+  if (docType === 'docs') {
+    value += `  <div class="title">Documentation</div>\n`
+    value += `  <router-link :to="'/docs'" exact>Home</router-link>\n`
+  }
   Object.keys(linkObject).forEach(key => {
-    if (['base', 'Hidden'].indexOf(key) !== -1) {
+    if (hiddenKeys.indexOf(key) === -1) {
       value += `  <div class="title">${key}</div>\n`
-      if(key === 'Docs'){
-        value += `  <router-link :to="'/docs'" exact>Documentation</router-link>\n`
-      }
       linkObject[key].forEach(link => {
-        if(link.title === 'Index'){
-          return
-        }
-        if(link.title === '2. First App'){
+        if (link.title === '2. First App') {
           value += `  <router-link to="/download">1. Download Tendermint</router-link>\n`
         }
         value += `  <router-link :to="'${link.url}'">${link.title}</router-link>\n`
@@ -37,8 +38,8 @@ function writeLinks(linkObject, filename) {
   return value
 }
 
-function writeTemplate(data, filename) {
-  let links = writeLinks(data, filename)
+function writeTemplate(data, filename, docType) {
+  let links = writeLinks(data, filename, docType)
   let filedata = template(htmlTemplate, { data: links })
   fs.writeFileSync(filename, filedata, 'utf8')
   console.log(`  ✓ ${filename}`)
@@ -56,18 +57,18 @@ function arrayToObject(array) {
   return object
 }
 
-function buildAll(wildcard, filename) {
+function buildAll(wildcard, filename, docType) {
   let filenames
   glob(wildcard, function(err, files) {
     if (err) console.log(err)
     filenames = files
     let data = lib.filesToArray(filenames)
     data = arrayToObject(data)
-    writeTemplate(data, filename)
+    writeTemplate(data, filename, docType)
   })
 }
 
 module.exports = function() {
-  buildAll(docs, './src/components/PageDocsMaster.vue')
-  buildAll(intro, './src/components/PageIntroMaster.vue')
+  buildAll(docs, './src/components/PageDocsMaster.vue', 'docs')
+  buildAll(intro, './src/components/PageIntroMaster.vue', 'intro')
 }

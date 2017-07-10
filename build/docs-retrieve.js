@@ -24,8 +24,9 @@ module.exports = function retrieve() {
       response.data
         .pipe(unzip.Parse())
         .on('entry', entry => {
-          let pieces = entry.path.split('tendermint-master/docs/')
-          if(entry.path === 'tendermint-master/changelog.md'){
+          let prefix = entry.path.split('/')[0]
+          let pieces = entry.path.split(prefix + '/docs/')
+          if(entry.path === prefix + '/changelog.md'){
             entry.pipe(createWriteStream(DOCS_PATH + '/changelog.md'))
           }
           if (pieces.length > 1) {
