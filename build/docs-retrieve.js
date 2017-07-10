@@ -7,7 +7,7 @@ let { createWriteStream } = require('fs')
 const DOCS_PATH = __dirname + '/../content/docs'
 const TENDERMINT_REPO_ZIP_URL =
   'https://github.com/tendermint/tendermint/archive/master.zip'
-
+const COPY_CHANGELOG = false
 /*
   copies //github.com/tendermint/tendermint/docs into /content/docs
 */
@@ -26,7 +26,7 @@ module.exports = function retrieve() {
         .on('entry', entry => {
           let prefix = entry.path.split('/')[0]
           let pieces = entry.path.split(prefix + '/docs/')
-          if(entry.path === prefix + '/changelog.md'){
+          if(COPY_CHANGELOG && entry.path === prefix + '/changelog.md'){
             entry.pipe(createWriteStream(DOCS_PATH + '/changelog.md'))
           }
           if (pieces.length > 1) {
