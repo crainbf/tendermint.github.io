@@ -266,16 +266,22 @@
   {
     "area": "operations",
     "description": "",
-    "id": "operations-manager",
-    "locations": ["Berlin", "San Francisco", "Toronto"],
+    "id": "operations-manager-berlin",
+    "locations": ["Berlin"],
     "requirements": [
-      "Business administration and legal experience"
+      "3 years of experience in project management or executive assistance",
+      "Exceptional professionalism, communication and interpersonal skills",
+      "Fluency in both German and English",
+      "Attention to detail, accuracy, reliability",
+      "Interest in and enthusiasm for blockchain technology"
     ],
     "tasks": [
-      "Create and organize legal documents, employment contracts, etc",
-      "Manage contracts/compliance of Interchain-AIB contracts and AIB-Subsidiaries contracts",
-      "Manage hiring process (categorizing incoming applications, assigning interviews, etc)"
-    ],
+      "Manage operational activities of company including onboarding employees, coordinating accounting and tax-related issues",
+      "Creating and maintaining key contractual agreements",
+      "Implement systems to file, organize and archive information",
+      "Managing organization of upcoming conferences, meetups and events",
+      "General administrative duties (preparing meeting materials, writing reports, setting up events)"
+    ]
     "title": "Operations Manager",
     "weight": 1
   },
